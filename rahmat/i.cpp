@@ -2,11 +2,35 @@
 using namespace std;
 
 #define ll long long
-const int N = 1e5 + 5;
+const int N = 1000 + 5;
 
-ll a[N][N];
-
+int a[N][N];
+ll ans, summ;
 int n;
+
+void visiting(int x, int y, vector<vector<int>> &visited) {
+	for(int i = max(0, x - n / 2); i <= min(n - 1, x + n / 2); i++)
+		for(int j = max(0, y - n / 2); j <= min(n - 1, y + n / 2); j++)
+			visited[i][j] = 1;
+}
+
+ll solve(int x, int y, ll curr, vector<vector<int>> visited) {
+	curr += a[x][y];
+	visiting(x, y, visited);
+	summ = 1e16;
+	bool change = false;
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			if(visited[i][j] == 0) {
+				summ = min(summ, solve(i, j, curr, visited));
+				change = true;
+			}
+	if(change)
+		curr += summ;
+
+	return curr;
+}
+
 void Main() {
     cin >> n;
 	for(int i = 0; i < n; i++) {
@@ -14,6 +38,12 @@ void Main() {
 			cin >> a[i][j];
 		}
 	}
+	ans = 1e16;
+	vector<vector<int>> visit(n, vector<int>(n, 0));
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			ans = min(ans, solve(i, j, 0, visit));
+	cout << ans << endl;
 }
 
 int main() {
