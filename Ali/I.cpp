@@ -29,8 +29,42 @@ void del_mval(ll &ans, int &dis, vector<vector<int>> &mat, int &n, vector<vector
         {
             safe[x][y] = 1;
             val[x][y] = 0;
+            mat[x][y] = 0;
         }
     }
+}
+
+void cal_val(int &n, int &dis, vector<vector<ll>> &val, vector<vector<int>> &mat, vector<vector<bool>> &safe)
+{
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < n; j++)
+        {
+            if (!safe[i][j])
+                for (int x = max(0, i - dis); x <= min(n - 1, i + dis); x++)
+                {
+                    for (int y = max(0, j - dis); y <= min(n - 1, j + dis); y++)
+                    {
+                        val[i][j] += mat[x][y];
+                    }
+                }
+            val[i][j] -= mat[i][j];
+        }
+    }
+}
+
+bool check_safe(int &n, vector<vector<bool>> &safe)
+{
+    if (!safe[0][0])
+        return false;
+    if (!safe[0][n - 1])
+        return false;
+    if (!safe[n - 1][0])
+        return false;
+    if (!safe[n - 1][n - 1])
+        return false;
+
+    return true;
 }
 
 void Main()
@@ -51,20 +85,6 @@ void Main()
     vector<vector<bool>> safe(n, vector<bool>(n, 0));
 
     vector<vector<ll>> val(n, vector<ll>(n, 0));
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
-            for (int x = max(0, i - dis); x <= min(n - 1, i + dis); x++)
-            {
-                for (int y = max(0, j - dis); y <= min(n - 1, j + dis); y++)
-                {
-                    val[i][j] += mat[x][y];
-                }
-            }
-            val[i][j] -= mat[i][j];
-        }
-    }
 
     // for (auto &row : val)
     // {
@@ -78,9 +98,16 @@ void Main()
     ll ans = 0;
     int mx = 0, my = 0;
     ll mval = -1;
-    find_max_val(n, val, safe, mx, my, mval);
+    while (!check_safe(n, safe))
+    {
+        cal_val(n, dis, val, mat, safe);
 
-    del_mval(ans, dis, mat, n, val, safe, mx, my, mval);
+        find_max_val(n, val, safe, mx, my, mval);
+
+        del_mval(ans, dis, mat, n, val, safe, mx, my, mval);
+    }
+
+    cout << ans << endl;
 }
 
 int main()
