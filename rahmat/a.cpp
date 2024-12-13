@@ -4,8 +4,20 @@ using namespace std;
 #define ll long long
 const int N = 1e5 + 5;
 
+ll n, mull;
+set<ll> ans;
+
 void Main() {
-    
+    cin >> n;
+	for(int mask = 1; mask < (1 << n); mask++) {
+		mull = 1;
+		for(int i = 0; i < n; i++) {
+			if(mask & (1 << i))
+				mull *= (i + 1);
+		}
+		ans.insert(mull);
+	}
+	cout << ans.size() << endl;
 }
 
 int main() {
