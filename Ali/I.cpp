@@ -3,32 +3,31 @@ using namespace std;
 
 #define ll long long
 
-void find_max_val(int &n, vector<vector<ll>> &val, vector<vector<bool>> &safe, int &mx, int &my, ll &mval)
+void find_max_val(int &n, vector<vector<int>> &mat, vector<vector<bool>> &safe, int &mx, int &my, ll &mval)
 {
-
+    mval = 1e9 + 5;
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
         {
             if (!safe[i][j])
-                if (val[i][j] > mval)
+                if (mat[i][j] < mval)
                 {
-                    mval = val[i][j];
+                    mval = mat[i][j];
                     mx = i;
                     my = j;
                 }
         }
     }
 }
-void del_mval(ll &ans, int &dis, vector<vector<int>> &mat, int &n, vector<vector<ll>> &val, vector<vector<bool>> &safe, int &mx, int &my, ll &mval)
+void del_mval(ll &ans, int &dis, vector<vector<int>> &mat, int &n, vector<vector<bool>> &safe, int &mx, int &my)
 {
-    ans = mat[mx][my];
+    ans += mat[mx][my];
     for (int x = max(0, mx - dis); x <= min(n - 1, mx + dis); x++)
     {
         for (int y = max(0, my - dis); y <= min(n - 1, my + dis); y++)
         {
             safe[x][y] = 1;
-            val[x][y] = 0;
             mat[x][y] = 0;
         }
     }
@@ -84,8 +83,9 @@ void Main()
     int dis = floor(n / 2.);
     vector<vector<bool>> safe(n, vector<bool>(n, 0));
 
-    vector<vector<ll>> val(n, vector<ll>(n, 0));
+    // vector<vector<ll>> val(n, vector<ll>(n, 0));
 
+    // cout << endl;
     // for (auto &row : val)
     // {
     //     for (auto &x : row)
@@ -94,17 +94,30 @@ void Main()
     //     }
     //     cout << endl;
     // }
+    // cout << endl;
 
     ll ans = 0;
     int mx = 0, my = 0;
     ll mval = -1;
     while (!check_safe(n, safe))
     {
-        cal_val(n, dis, val, mat, safe);
+        // cal_val(n, dis, val, mat, safe);
 
-        find_max_val(n, val, safe, mx, my, mval);
+        find_max_val(n, mat, safe, mx, my, mval);
 
-        del_mval(ans, dis, mat, n, val, safe, mx, my, mval);
+        cout << endl;
+        cout << mval << ' ' << mx << ' ' << my << endl;
+        for (auto &row : mat)
+        {
+            for (auto &x : row)
+            {
+                cout << x << ' ';
+            }
+            cout << endl;
+        }
+        cout << endl;
+
+        del_mval(ans, dis, mat, n, safe, mx, my);
     }
 
     cout << ans << endl;
